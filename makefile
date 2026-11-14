@@ -3,15 +3,24 @@ CXXFLAGS = -std=c++17 -Wall -Wextra
 LDFLAGS  = -framework Metal -framework Foundation -framework QuartzCore
 
 TARGET = main
-SRC    = main.cpp
+SRC    = main.cpp instance.cpp
+BUILD  = build
+OBJ    = $(SRC:%.cpp=$(BUILD)/%.o)
+HDR    = instance.h
 
-$(TARGET): $(SRC)
-	$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET) $(LDFLAGS)
+$(TARGET): $(OBJ)
+	$(CXX) $(OBJ) -o $(TARGET) $(LDFLAGS)
+
+$(BUILD)/%.o: %.cpp $(HDR) | $(BUILD)
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD):
+	mkdir -p $(BUILD)
 
 run: $(TARGET)
 	./$(TARGET)
 
 clean:
-	rm -f $(TARGET)
+	rm -rf $(TARGET) $(BUILD)
 
 .PHONY: run clean
